@@ -1,0 +1,22 @@
+---
+- hosts: group1
+  remote_user: root
+  vars:
+    - mysql_root_pass: "123"
+  roles:
+    - mysql
+
+- hosts: group2
+  remote_user: root
+  roles:
+    - nginx
+
+- hosts: group3
+  remote_user: root
+  roles:
+    - php
+
+- hosts: group4
+  remote_user: root
+  roles:
+    - monitoring

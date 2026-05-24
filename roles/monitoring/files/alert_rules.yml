@@ -1,0 +1,28 @@
+groups:
+  - name: server_alerts
+    rules:
+      - alert: CPU负载过高
+        expr: node_load1 > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "服务器CPU负载超过80%（当前值: {{ $value }}）"
+
+      - alert: 磁盘空间不足
+        expr: node_filesystem_free_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} < 0.2
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "服务器磁盘空间不足20%（当前值: {{ $value | humanizePercentage }}）"
+
+  - name: web_alerts
+    rules:
+      - alert: 5xx错误率过高
+        expr: rate(nginx_http_requests_total{status=~"5.."}[5m]) / rate(nginx_http_requests_total[5m]) > 0.01
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Nginx 5xx错误率超过1%（当前值: {{ $value | humanizePercentage }}）"

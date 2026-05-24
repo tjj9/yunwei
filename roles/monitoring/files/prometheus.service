@@ -1,0 +1,13 @@
+[Unit]
+Description=Prometheus Server
+After=network.target
+
+[Service]
+Type=simple
+User=prometheus
+Group=prometheus
+ExecStart=/usr/local/prometheus/bin/prometheus --config.file=/usr/local/prometheus/prometheus.yml --storage.tsdb.path=/usr/local/prometheus/data
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

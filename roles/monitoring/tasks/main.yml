@@ -1,0 +1,38 @@
+---
+- name: 安装wget
+  yum: name=wget state=present
+
+- name: 下载Prometheus
+  shell: |
+    wget https://github.com/prometheus/prometheus/releases/download/v2.45.0/prometheus-2.45.0.linux-amd64.tar.gz -O /root/prometheus.tar.gz
+    tar -xf /root/prometheus.tar.gz -C /usr/local/
+    mv /usr/local/prometheus-* /usr/local/prometheus
+    useradd -r -s /sbin/nologin prometheus 2>/dev/null || true
+    chown -R prometheus:prometheus /usr/local/prometheus
+  args:
+    creates: /usr/local/prometheus/bin/prometheus
+
+- name: 配置prometheus.yml
+  copy: src=/etc/ansible/roles/monitoring/files/prometheus.yml dest=/usr/local/prometheus/prometheus.yml
+
+- name: 配置告警规则
+  copy: src=/etc/ansible/roles/monitoring/files/alert_rules.yml dest=/usr/local/prometheus/alert_rules.yml
+
+- name: 配置prometheus systemd服务
+  copy: src=/etc/ansible/roles/monitoring/files/prometheus.service dest=/usr/lib/systemd/system/prometheus.service
+
+- name: 启动prometheus
+  systemctl daemon-reload
+  service: name=prometheus state=started enabled=yes
+
+- name: 安装Grafana
+  shell: |
+    dnf install -y https://dl.grafana.com/enterprise/release/grafana-enterprise-10.2.2-1.x86_64.rpm
+  args:
+    creates: /usr/sbin/grafana-server
+
+- name: 启动Grafana
+  service: name=grafana-server state=started enabled=yes
+
+- name: 防火墙放行Prometheus和Grafana端口
+  shell: systemctl is-active firewalld && firewall-cmd --add-port=9090/tcp --add-port=3000/tcp --permanent && firewall-cmd --reload || true
