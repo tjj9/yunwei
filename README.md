@@ -141,16 +141,3 @@ roles/
 - **全链路监控**：从系统层（CPU/磁盘）到应用层（Nginx 5xx、MySQL QPS）全覆盖
 - **生产级 Nginx 配置**：限流、防盗链、动静分离开箱即用
 
-## 面试回答要点（简历项目用）
-
-### 项目亮点
-- 使用 Ansible Roles 标准结构管理四组（MySQL / Nginx / PHP / 监控）共 6 个服务的一键部署
-- Nginx 配置涵盖限流（limit_req_zone）、防盗链（valid_referers）、动静分离（expires）等生产级特性
-- Prometheus + Grafana 监控栈覆盖系统指标、Nginx 指标、MySQL 指标，配置三条告警规则
-- 注重脚本健壮性：idempotency check、shell set -e、socket polling 替代 sleep、PID file 检查、selinux disable 等
-
-### 常见追问准备
-- **为什么不用 Docker？**：编译安装更深入理解组件原理，面试中可展示对 Linux 编译/配置/排错的掌握
-- **单机测试怎么体现分布式？**：hosts 文件全设同一 IP，配置和脚本保持四组分离，换 IP 即可切分布式
-- **监控有什么作用？**：面试中可以讲"某次线上 5xx 飙升被 Prometheus 告警发现，通过 Grafana 面板定位到 php-fpm 进程挂掉，及时恢复"
-"# yunwei" 
